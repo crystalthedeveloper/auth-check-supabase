@@ -22,5 +22,4 @@ async function checkUserAuthentication() {
   }
 }
 
-// Run authentication check when the DOM is loaded
 document.addEventListener("DOMContentLoaded", checkUserAuthentication);
