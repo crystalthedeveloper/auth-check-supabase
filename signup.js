@@ -8,7 +8,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // Initialize Supabase client
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   
-    // Debugging
+    // Define CORS headers
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "*", // Allow all origins (set specific origins in production)
+      "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+    };
+  
     console.log("Supabase initialized:", supabase);
   
     const signupForm = document.querySelector("#signup-form");
@@ -23,13 +28,20 @@ document.addEventListener("DOMContentLoaded", () => {
       const agreePolicy = document.querySelector("#agree-policy")?.checked;
       const agreeMarketing = document.querySelector("#agree-marketing")?.checked;
   
+      if (!email || !password || !firstName) {
+        alert("Please fill in all required fields.");
+        return;
+      }
+  
       if (!agreePolicy) {
         alert("You must agree to the privacy policy and terms of service.");
         return;
       }
   
       try {
-        // Use Supabase's signUp method to register the user
+        console.log("Submitting signup with:", { email, firstName, agreeMarketing });
+  
+        // Call Supabase signUp method
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -43,12 +55,19 @@ document.addEventListener("DOMContentLoaded", () => {
   
         if (error) throw error;
   
-        console.log("Signup successful:", data.user);
+        console.log("Signup successful:", data);
         alert("Signup successful! Check your email to verify your account.");
-        window.location.href = "https://www.crystalthedeveloper.ca/user-pages/login";
+  
+        // Adding CORS headers response
+        return new Response("Signup successful", { headers: corsHeaders });
+  
+        window.location.href = "www.crystalthedeveloper.ca/crystalscrypt";
       } catch (err) {
         console.error("Signup error:", err.message);
         alert(`Signup failed: ${err.message}`);
+  
+        // Adding CORS headers for errors
+        return new Response(`Signup failed: ${err.message}`, { headers: corsHeaders });
       }
     });
   });
