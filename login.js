@@ -1,41 +1,35 @@
 
 // Login
-document.addEventListener("DOMContentLoaded", async () => {
-    // Ensure a single Supabase client instance
+document.addEventListener("DOMContentLoaded", () => {
+    // Supabase configuration
     const SUPABASE_URL = "https://pkaeqqqxhkgosfppzmmt.supabase.co";
     const SUPABASE_KEY =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrYWVxcXF4aGtnb3NmcHB6bW10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNzEyMjgsImV4cCI6MjA0OTg0NzIyOH0.dpxd-Y6Zvfu_1tcfELPNV7acq6X9tWMd8paNK28ncsc";
-    const supabase = window.supabase || supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInBrYWVxcXF4aGtnb3NmcHB6bW10Iiwicm9zZSI6ImFub24iLCJpYXQiOjE3MzQyNzEyMjgsImV4cCI6MjA0OTg0NzIyOH0.dpxd-Y6Zvfu_1tcfELPNV7acq6X9tWMd8paNK28ncsc";
 
-    // Login Form
+    // Initialize Supabase client
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
     const loginForm = document.querySelector("#login-form");
-    loginForm.addEventListener("submit", async (event) => {
+
+    // Handle login form submission
+    loginForm?.addEventListener("submit", async (event) => {
         event.preventDefault();
 
-        const email = document.querySelector("#login-email").value.trim();
-        const password = document.querySelector("#login-password").value.trim();
+        const email = document.querySelector("#login-email")?.value.trim();
+        const password = document.querySelector("#login-password")?.value.trim();
+
+        if (!email || !password) {
+            alert("Please enter both email and password.");
+            return;
+        }
 
         try {
+            // Use Supabase's signInWithPassword method to log in the user
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
             if (error) throw error;
 
-            const { user, session } = data;
-
-            // Log user information and access token
-            console.log("User ID:", user.id);
-            console.log("Access Token:", session.access_token);
-
-            // Optional: Send the token and user ID to Unreal Engine or other backend
-            await fetch("http://localhost:8080/store-token", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    token: session.access_token,
-                    userId: user.id,
-                }),
-            });
-
+            console.log("Login successful:", data.user);
             alert("Login successful!");
             window.location.href = "https://www.crystalthedeveloper.ca/crystalscrypt";
         } catch (err) {
@@ -44,9 +38,10 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    // Forgot Password
+    // Forgot password functionality
     const forgotPasswordLink = document.querySelector("#forgot-password");
-    forgotPasswordLink.addEventListener("click", async (event) => {
+
+    forgotPasswordLink?.addEventListener("click", async (event) => {
         event.preventDefault();
 
         const email = prompt("Enter your email to reset your password:");
