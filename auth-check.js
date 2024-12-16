@@ -1,3 +1,5 @@
+
+// Check for user session
 document.addEventListener("DOMContentLoaded", async () => {
     // Ensure a single Supabase client instance
     const SUPABASE_URL = "https://pkaeqqqxhkgosfppzmmt.supabase.co";
