@@ -6,24 +6,47 @@ document.addEventListener("DOMContentLoaded", async () => {
   const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrYWVxcXF4aGtnb3NmcHB6bW10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNzEyMjgsImV4cCI6MjA0OTg0NzIyOH0.dpxd-Y6Zvfu_1tcfELPNV7acq6X9tWMd8paNK28ncsc";
   const supabase = window.supabase || supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  
+
   try {
+    // Fetch the current session
     const { data, error } = await supabase.auth.getSession();
 
+    // Default to "Welcome" if no active session
     if (error || !data.session) {
-      console.error("No active session found. Redirecting...");
-      window.location.href = "https://www.crystalthedeveloper.ca/user-pages/access-denied";
+      console.warn("No active session found.");
+      updateUserInfo("Welcome");
       return;
     }
 
     const user = data.session.user;
 
-    const userElement = document.querySelector("#user-info");
-    if (userElement) {
-      userElement.textContent = `Welcome, ${user.email}`;
+    // Retrieve the user's metadata (e.g., first name) if stored
+    const { data: userData, error: userError } = await supabase
+      .from("profiles") // Replace "profiles" with your actual table name
+      .select("first_name")
+      .eq("id", user.id)
+      .single();
+
+    if (userError) {
+      console.warn("Error fetching user details:", userError.message);
+      updateUserInfo("Welcome");
+      return;
     }
+
+    const firstName = userData?.first_name?.trim() || "Welcome";
+    updateUserInfo(firstName);
   } catch (err) {
     console.error("Error fetching user session:", err.message);
-    window.location.href = "https://www.crystalthedeveloper.ca/user-pages/access-denied";
+    updateUserInfo("Welcome");
+  }
+
+  // Function to update the #user-info element
+  function updateUserInfo(message) {
+    const userElement = document.querySelector("#user-info");
+    if (userElement) {
+      userElement.textContent = message;
+    } else {
+      console.warn("Element with ID '#user-info' not found.");
+    }
   }
 });
