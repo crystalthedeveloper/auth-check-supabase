@@ -8,8 +8,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   try {
-    console.log("Checking user session...");
-
     // Fetch the currently logged-in user session
     const {
       data: { session },
@@ -17,19 +15,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     } = await supabase.auth.getSession();
 
     if (sessionError || !session) {
-      console.warn("No active session found.");
       updateUserInfo("Welcome");
       return;
     }
 
     const user = session.user;
-    console.log("User session found:", user);
 
     // Retrieve the first_name from user metadata
     const firstName = user.user_metadata?.first_name || "User";
     updateUserInfo(`Welcome, ${firstName}!`);
   } catch (err) {
-    console.error("Error fetching user session:", err.message);
     updateUserInfo("Welcome");
   }
 
@@ -38,8 +33,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const userElement = document.querySelector("#user-info");
     if (userElement) {
       userElement.textContent = message;
-    } else {
-      console.warn("Element with ID '#user-info' not found.");
     }
   }
 });
