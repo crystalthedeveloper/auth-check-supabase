@@ -7,40 +7,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     const toggleBtn = document.querySelector("#auth-toggle-btn");
 
-    // Check user status and update button
+    // Update button based on user authentication status
     async function updateAuthButton() {
         const { data: { user } } = await supabaseClient.auth.getUser();
 
         if (user) {
-            // User is logged in
             toggleBtn.textContent = "Logout";
             toggleBtn.dataset.authAction = "logout";
         } else {
-            // User is logged out
             toggleBtn.textContent = "Login";
             toggleBtn.dataset.authAction = "login";
         }
     }
 
-    await updateAuthButton(); // Set initial button state
+    await updateAuthButton();
 
-    // Toggle Button Handler
+    // Handle button click for login/logout
     toggleBtn.addEventListener("click", async () => {
         const authAction = toggleBtn.dataset.authAction;
 
         if (authAction === "logout") {
-            // Logout user
             try {
                 const { error } = await supabaseClient.auth.signOut();
-                if (error) throw error;
-
-                alert("Logged out successfully!");
-                window.location.href = "https://www.crystalthedeveloper.ca/";
+                if (!error) {
+                    window.location.href = "https://www.crystalthedeveloper.ca/";
+                }
             } catch (error) {
-                alert(`Logout failed: ${error.message}`);
+                // Optional: handle silent errors if needed
             }
         } else if (authAction === "login") {
-            // Redirect to login page
             window.location.href = "https://www.crystalthedeveloper.ca/user-pages/login";
         }
     });
