@@ -9,21 +9,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     console.log("Checking user session...");
 
-    // Use getUser() to fetch the current user
-    const {
-      data: { user },
-      error: userError,
-    } = await supabase.auth.getUser();
+    // Fetch current session
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
 
-    if (userError || !user) {
-      console.warn("No active session or error fetching user:", userError?.message);
+    if (sessionError || !sessionData?.session) {
+      console.warn("No active session found.");
       updateUserInfo("Welcome");
       return;
     }
 
+    const user = sessionData.session.user;
+
     console.log("User session found:", user);
 
-    // Retrieve first_name from user metadata
+    // Retrieve the user's first_name from user metadata
     const firstName = user.user_metadata?.first_name?.trim() || "Welcome";
     updateUserInfo(`Welcome, ${firstName}!`);
   } catch (err) {
