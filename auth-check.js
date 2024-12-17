@@ -11,7 +11,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         console.log("Checking active user session...");
 
-        // Use getUser to fetch the authenticated user directly
+        // Refresh session if needed
+        const { data: sessionData, error: refreshError } = await supabaseClient.auth.refreshSession();
+        if (refreshError) {
+            console.warn("Session refresh failed:", refreshError.message);
+        }
+
+        // Use getUser to fetch the authenticated user
         const { data: { user }, error } = await supabaseClient.auth.getUser();
 
         if (error || !user) {
@@ -20,12 +26,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
 
-        console.log("Authenticated user:", user);
+        console.log("Authenticated user session confirmed:", user);
 
-        // If session exists, redirect to the protected page
-        window.location.href = "https://www.crystalthedeveloper.ca/crystalscrypt";
+        // If session exists, stay on the current page or allow navigation
+        // No redirect needed; the user can access the current page.
     } catch (err) {
-        console.error("Error fetching user session:", err.message);
+        console.error("Error checking user session:", err.message);
         window.location.href = "https://www.crystalthedeveloper.ca/user-pages/access-denied";
     }
 });
