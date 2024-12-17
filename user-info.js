@@ -1,25 +1,28 @@
 // Fetch the authenticated user name
 document.addEventListener("DOMContentLoaded", async () => {
-  // Ensure Supabase is initialized before accessing it
   const SUPABASE_URL = "https://pkaeqqqxhkgosfppzmmt.supabase.co";
   const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrYWVxcXF4aGtnb3NmcHB6bW10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNzEyMjgsImV4cCI6MjA0OTg0NzIyOH0.dpxd-Y6Zvfu_1tcfELPNV7acq6X9tWMd8paNK28ncsc";
 
-  // Initialize Supabase client
+  // Properly initialize Supabase client
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   try {
     console.log("Checking user session...");
 
-    // Fetch the currently logged-in user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Fetch the currently logged-in user session
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-    if (userError || !user) {
-      console.warn("No active session or error fetching user:", userError?.message);
+    if (sessionError || !session) {
+      console.warn("No active session found.");
       updateUserInfo("Welcome");
       return;
     }
 
+    const user = session.user;
     console.log("User session found:", user);
 
     // Retrieve the first_name from user metadata
