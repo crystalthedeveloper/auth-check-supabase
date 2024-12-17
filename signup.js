@@ -4,20 +4,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const SUPABASE_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrYWVxcXF4aGtnb3NmcHB6bW10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNzEyMjgsImV4cCI6MjA0OTg0NzIyOH0.dpxd-Y6Zvfu_1tcfELPNV7acq6X9tWMd8paNK28ncsc";
   
-    // Initialize Supabase client with a unique variable name
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log("Supabase initialized:", supabaseClient);
-  
     const signupForm = document.querySelector("#signup-form");
+    const errorContainer = document.querySelector("#error-messages");
+  
     signupForm?.addEventListener("submit", async (event) => {
       event.preventDefault();
+      errorContainer.textContent = ""; // Clear previous errors
   
       const email = document.querySelector("#signup-email")?.value.trim();
       const password = document.querySelector("#signup-password")?.value.trim();
       const firstName = document.querySelector("#signup-first-name")?.value.trim();
   
       try {
-        console.log("Submitting signup with:", { email, firstName });
         const { data, error } = await supabaseClient.auth.signUp({
           email,
           password,
@@ -26,11 +25,15 @@ document.addEventListener("DOMContentLoaded", () => {
   
         if (error) throw error;
   
-        alert("Signup successful! Verify your email.");
-        window.location.href = "https://www.crystalthedeveloper.ca/user-pages/login";
+        errorContainer.textContent = "Signup successful! Verify your email.";
+        errorContainer.style.color = "green";
+  
+        setTimeout(() => {
+          window.location.href = "https://www.crystalthedeveloper.ca/user-pages/login";
+        }, 2000);
       } catch (err) {
-        console.error("Signup error:", err.message);
-        alert(`Signup failed: ${err.message}`);
+        errorContainer.textContent = `Signup failed: ${err.message}`;
+        errorContainer.style.color = "red";
       }
     });
   });

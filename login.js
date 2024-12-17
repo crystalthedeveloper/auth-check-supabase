@@ -6,9 +6,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Initialize Supabase client
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    console.log("Supabase initialized:", supabaseClient);
 
     const loginForm = document.querySelector("#login-form");
+    const formError = document.querySelector("#form-error");
+
+    // Utility function to display error messages
+    const displayError = (message) => {
+        formError.textContent = message; // Update error container
+    };
 
     // Handle login form submission
     loginForm?.addEventListener("submit", async (event) => {
@@ -17,14 +22,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const email = document.querySelector("#login-email")?.value.trim();
         const password = document.querySelector("#login-password")?.value.trim();
 
+        formError.textContent = ""; // Clear previous errors
+
         if (!email || !password) {
-            alert("Please enter both email and password.");
+            displayError("Please enter both email and password.");
             return;
         }
 
         try {
-            console.log("Attempting login for:", email);
-
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email,
                 password,
@@ -32,12 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (error) throw error;
 
-            console.log("Login successful:", data.user);
-            alert("Login successful!");
+            displayError(""); // Clear errors if successful
             window.location.href = "https://www.crystalthedeveloper.ca/crystalscrypt";
         } catch (err) {
-            console.error("Login error:", err.message);
-            alert(`Login failed: ${err.message}`);
+            displayError(`Login failed: ${err.message}`); // Display error message
         }
     });
 });
