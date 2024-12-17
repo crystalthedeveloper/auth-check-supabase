@@ -4,26 +4,27 @@ document.addEventListener("DOMContentLoaded", async () => {
   const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrYWVxcXF4aGtnb3NmcHB6bW10Iiwicm9zZSI6ImFub24iLCJpYXQiOjE3MzQyNzEyMjgsImV4cCI6MjA0OTg0NzIyOH0.dpxd-Y6Zvfu_1tcfELPNV7acq6X9tWMd8paNK28ncsc";
 
-  const supabase = window.supabase || supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   try {
     console.log("Checking user session...");
 
-    // Fetch current session
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    // Fetch the currently logged-in user
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
 
-    if (sessionError || !sessionData?.session) {
-      console.warn("No active session found.");
+    if (userError || !user) {
+      console.warn("No active session or error fetching user:", userError?.message);
       updateUserInfo("Welcome");
       return;
     }
 
-    const user = sessionData.session.user;
-
     console.log("User session found:", user);
 
-    // Retrieve the user's first_name from user metadata
-    const firstName = user.user_metadata?.first_name?.trim() || "Welcome";
+    // Retrieve the first_name directly from user metadata
+    const firstName = user.user_metadata?.first_name || "User";
     updateUserInfo(`Welcome, ${firstName}!`);
   } catch (err) {
     console.error("Error fetching user session:", err.message);
