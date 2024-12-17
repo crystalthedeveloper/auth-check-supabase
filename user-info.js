@@ -5,8 +5,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const SUPABASE_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrYWVxcXF4aGtnb3NmcHB6bW10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNzEyMjgsImV4cCI6MjA0OTg0NzIyOH0.dpxd-Y6Zvfu_1tcfELPNV7acq6X9tWMd8paNK28ncsc";
 
-  // Initialize Supabase client here
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  // Initialize Supabase client
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   try {
     console.log("Checking user session...");
