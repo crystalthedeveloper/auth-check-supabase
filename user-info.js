@@ -2,14 +2,14 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const SUPABASE_URL = "https://pkaeqqqxhkgosfppzmmt.supabase.co";
   const SUPABASE_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrYWVxcXF4aGtnb3NmcHB6bW10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNzEyMjgsImV4cCI6MjA0OTg0NzIyOH0.dpxd-Y6Zvfu_1tcfELPNV7acq6X9tWMd8paNK28ncsc";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrYWVxcXF4aGtnb3NmcHB6bW10Iiwicm9zZSI6ImFub24iLCJpYXQiOjE3MzQyNzEyMjgsImV4cCI6MjA0OTg0NzIyOH0.dpxd-Y6Zvfu_1tcfELPNV7acq6X9tWMd8paNK28ncsc";
 
   const supabase = window.supabase || supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   try {
     console.log("Checking user session...");
 
-    // Use getUser() to fetch the current user in Supabase v2.x
+    // Use getUser() to fetch the current user
     const {
       data: { user },
       error: userError,
@@ -23,20 +23,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     console.log("User session found:", user);
 
-    // Fetch first_name from profiles table
-    const { data: profileData, error: profileError } = await supabase
-      .from("profiles") // Replace with your table name
-      .select("first_name")
-      .eq("id", user.id)
-      .single();
-
-    if (profileError || !profileData) {
-      console.warn("Error fetching user details:", profileError?.message);
-      updateUserInfo("Welcome");
-      return;
-    }
-
-    const firstName = profileData?.first_name?.trim() || "Welcome";
+    // Retrieve first_name from user metadata
+    const firstName = user.user_metadata?.first_name?.trim() || "Welcome";
     updateUserInfo(`Welcome, ${firstName}!`);
   } catch (err) {
     console.error("Error fetching user session:", err.message);
