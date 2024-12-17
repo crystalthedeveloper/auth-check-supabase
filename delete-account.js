@@ -1,14 +1,25 @@
 // Delete Account
 document.addEventListener("DOMContentLoaded", () => {
     const deleteForm = document.querySelector("#delete-account-form");
+    const notification = document.querySelector("#notification");
+  
+    // Utility to display notifications
+    const displayNotification = (message, isError = false) => {
+      notification.textContent = message;
+      notification.style.color = isError ? "red" : "green";
+      notification.style.display = "block";
+    };
   
     deleteForm?.addEventListener("submit", async (event) => {
       event.preventDefault();
   
+      // Clear previous notifications
+      displayNotification("");
+  
       const email = document.querySelector("#delete-account-email")?.value.trim();
   
       if (!email) {
-        alert("Please enter your email.");
+        displayNotification("Please enter your email.", true);
         return;
       }
   
@@ -36,11 +47,13 @@ document.addEventListener("DOMContentLoaded", () => {
           throw new Error(result.error || "Failed to delete account");
         }
   
-        alert("Account deleted successfully!");
-        window.location.href = "https://www.crystalthedeveloper.ca";
+        displayNotification("Account deleted successfully!");
+        setTimeout(() => {
+          window.location.href = "https://www.crystalthedeveloper.ca";
+        }, 1500); // Redirect after 1.5 seconds
       } catch (err) {
         console.error("Delete account error:", err.message);
-        alert(`Error: ${err.message}`);
+        displayNotification(`Error: ${err.message}`, true);
       }
     });
   });
