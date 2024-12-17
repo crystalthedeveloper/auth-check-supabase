@@ -8,21 +8,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log("Checking active user session...");
 
     try {
-        // Fetch the current user
-        const { data: { user }, error } = await supabaseClient.auth.getUser();
+        // Retrieve current session
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
 
-        if (error || !user) {
+        if (error || !session) {
             console.log("No active session. Redirecting...");
-            window.location.href = "https://www.crystalthedeveloper.ca/user-pages/access-denied";
+            window.location.href = "https://www.crystalthedeveloper.ca/user-pages/login";
             return;
         }
 
-        console.log("User authenticated:", user);
-
-        // Allow access or redirect to the protected page
+        console.log("Session is active.");
+        // Redirect to the protected page
         window.location.href = "https://www.crystalthedeveloper.ca/crystalscrypt";
     } catch (err) {
-        console.error("Error checking user session:", err.message);
-        window.location.href = "https://www.crystalthedeveloper.ca/user-pages/access-denied";
+        console.error("Error checking session:", err.message);
+        window.location.href = "https://www.crystalthedeveloper.ca/user-pages/login";
     }
 });
