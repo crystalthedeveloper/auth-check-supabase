@@ -9,15 +9,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     console.log("Checking user session...");
 
-    // Fetch current session
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !sessionData?.session) {
-      console.warn("No active session found.");
+    // Use getUser() to fetch the current user in Supabase v2.x
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      console.warn("No active session or error fetching user:", userError?.message);
       updateUserInfo("Welcome");
       return;
     }
 
-    const user = sessionData.session.user;
     console.log("User session found:", user);
 
     // Fetch first_name from profiles table
