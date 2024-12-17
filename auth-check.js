@@ -6,10 +6,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const supabaseClient = window.supabase || supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    try {
-        console.log("Checking active user session...");
+    console.log("Checking active user session...");
 
-        // Fetch the authenticated user directly
+    try {
+        // Refresh session to ensure validity
+        const { data: sessionData, error: refreshError } = await supabaseClient.auth.refreshSession();
+        if (refreshError) {
+            console.warn("Session refresh failed:", refreshError.message);
+        }
+
+        // Listen for auth state changes
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            console.log("Auth state changed:", event, session);
+
+            if (session?.user) {
+                console.log("User authenticated:", session.user);
+                // Redirect to the protected page
+                window.location.href = "https://www.crystalthedeveloper.ca/crystalscrypt";
+            } else {
+                console.log("No active user session. Redirecting...");
+                window.location.href = "https://www.crystalthedeveloper.ca/user-pages/access-denied";
+            }
+        });
+
+        // Fetch the current user
         const { data: { user }, error } = await supabaseClient.auth.getUser();
 
         if (error || !user) {
@@ -19,9 +39,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         console.log("User authenticated:", user);
-
-        // If user is authenticated, allow access or redirect to a protected page
-        window.location.href = "https://www.crystalthedeveloper.ca/crystalscrypt";
     } catch (err) {
         console.error("Error checking user session:", err.message);
         window.location.href = "https://www.crystalthedeveloper.ca/user-pages/access-denied";
