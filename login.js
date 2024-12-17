@@ -40,29 +40,4 @@ document.addEventListener("DOMContentLoaded", () => {
             alert(`Login failed: ${err.message}`);
         }
     });
-
-    // Forgot Password Section
-    const forgotPasswordLink = document.querySelector("#forgot-password");
-
-    forgotPasswordLink?.addEventListener("click", async () => {
-        const email = prompt("Enter your email to reset the password:");
-
-        if (!email) {
-            alert("Please provide an email address.");
-            return;
-        }
-
-        try {
-            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-                redirectTo: "https://www.crystalthedeveloper.ca/user-pages/reset-password", // Webflow reset page
-            });
-
-            if (error) throw error;
-
-            alert("Password reset email sent! Please check your inbox.");
-        } catch (err) {
-            console.error("Reset password error:", err.message);
-            alert(`Error: ${err.message}`);
-        }
-    });
 });
