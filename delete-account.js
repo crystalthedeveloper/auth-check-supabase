@@ -1,12 +1,5 @@
 // Delete Account
 document.addEventListener("DOMContentLoaded", () => {
-    const SUPABASE_URL = "https://pkaeqqqxhkgosfppzmmt.supabase.co";
-    const SUPABASE_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBrYWVxcXF4aGtnb3NmcHB6bW10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQyNzEyMjgsImV4cCI6MjA0OTg0NzIyOH0.dpxd-Y6Zvfu_1tcfELPNV7acq6X9tWMd8paNK28ncsc";
-  
-    // Initialize Supabase client
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  
     const deleteForm = document.querySelector("#delete-account-form");
   
     deleteForm?.addEventListener("submit", async (event) => {
@@ -25,28 +18,23 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!confirmation) return;
   
       try {
-        console.log("Deleting account for:", email);
+        // Send POST request to Vercel endpoint
+        const response = await fetch("https://user-auth-supabase.vercel.app/api/delete-account", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        });
   
-        // Get the current session to authenticate the user
-        const {
-          data: { session },
-          error: sessionError,
-        } = await supabaseClient.auth.getSession();
+        const result = await response.json();
   
-        if (sessionError || !session) {
-          alert("You need to be logged in to delete your account.");
-          throw new Error("No active session.");
+        if (response.ok) {
+          alert("Account deleted successfully.");
+          window.location.href = "https://www.crystalthedeveloper.ca";
+        } else {
+          throw new Error(result.error || "Unable to delete account.");
         }
-  
-        // Call Supabase to delete the user's account
-        const { error } = await supabaseClient.auth.signOut();
-  
-        if (error) throw error;
-  
-        alert("Account deleted successfully.");
-        window.location.href = "https://www.crystalthedeveloper.ca/user-pages/login";
       } catch (err) {
-        console.error("Error deleting account:", err.message);
+        console.error("Delete account error:", err.message);
         alert(`Error: ${err.message}`);
       }
     });
